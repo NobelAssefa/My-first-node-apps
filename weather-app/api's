@@ -1,0 +1,4 @@
+https://api.openweathermap.org/data/2.5/weather?lat=37.8267&lon=-122.4233&appid=fe8828076d2641afaa265e67ccf74c05
+http://api.weatherstack.com/current?access_key=0761934b8b72237c433c728faf5b5772&query=New%20York
+
+https://api.openweathermap.org/data/2.5/weather?q=London&appid=32be9e27df35f14fdd52751c6bc99413
