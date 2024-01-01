@@ -16,40 +16,66 @@ MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client)=>{
     }
     const db = client.db(databaseName)
 
-    db.collection('users').findOne({_id : new ObjectId("659081dec497b504c49530dc")}, (error, user)=>{
-        if(error){
-            return console.log("unable to conncet to the database")
-        }
-        console.log(user)
+    // db.collection('tasks').updateMany({
+    //     completed: false
+    // },{
+    //     $set: {
+    //         completed: true
+    //     }
+    // }).then((result)=>{
+    //     console.log(result.modifiedCount)
+    // }).catch((error)=>{
+    //     console.log(error)
+    // })
 
+    // the above code is used to updateMany
+
+    db.collection('tasks').deleteOne({
+        description: 'task-manager'
+    }).then((result)=>{
+        console.log(result)
+    }).catch((error)=>{
+        console.log(error)
     })
 
-    // db.collection('users').insertOne({
-    //     name:'Abel',
-    //     age:'24'
-    // })
-    // console.log("Created!!")
-
-// used to insert one document
-
-    // db.collection('tasks').insertMany([{
-    //     description: 'Note-app',
-    //     completed: true
+    // db.collection('users').updateOne({
+    //     _id: new ObjectId('659081dec497b504c49530dc')
     // },{
-    //     description: 'weather-app',
-    //     completed: true
-    // },{
-    //     description: 'task-manager',
-    //     completed: false
-    // }],(error,result)=>{
-    //     if(error){
-    //         return console.log("Unable to insert document")
+    //     $set: {
+    //         name: 'Mike'
     //     }
-    //     console.log(result.ops)
-        
+    // }).then((result)=>{
+    //     console.log(result)
+
+    // }).catch((error)=>{
+    //     console.log(error)
 
     // })
-    
+
+    // the above operation performs upadataOne
+
+    // db.collection('tasks').findOne({_id: new ObjectId("65908b4f91a1ad2c3c386416")}, (error, last_task)=>{
+    //     if(error){
+    //         return console.log('unable to conncet to the database')
+    //     }
+
+    //     console.log(last_task)
+
+    // })
+    // db.collection('tasks').find({completed: false}).toArray((error, notcompleted)=>{
+    //     if(error){
+    //         return console.log('unable to conncet to the database')
+    //     }
+
+    //     console.log(notcompleted)
+
+    // })
+
+    // the above code performes the read operation from crud operation
+
+
+
+   
 
 })
 
