@@ -1,19 +1,20 @@
 const mongoose = require('mongoose')
 const validator = require("validator")
-
-
-const User = mongoose.model('User', {
-    name:{
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const userSchema = mongoose.Schema({
+    name: {
         type: String,
         trim: true,
         lowercase: true
     },
     email: {
-        type:String,
+        type: String,
+        unique:true,
         required: true,
-        lowercase:true,
-        validate(value){
-            if(!validator.isEmail(value)){
+        lowercase: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
                 throw new Error('Email is not valid!!')
             }
         }
@@ -21,10 +22,10 @@ const User = mongoose.model('User', {
     password: {
         type: String,
         required: true,
-        minLength:7,
-        tirm:true,
-        validate(value){
-            if(value.toLowerCase().includes('password')){
+        minLength: 7,
+        tirm: true,
+        validate(value) {
+            if (value.toLowerCase().includes('password')) {
                 throw new Error('The password field can not contain the word password')
             }
 
@@ -32,13 +33,59 @@ const User = mongoose.model('User', {
     },
     age: {
         type: Number,
-        default:0,
-        validate(value){
-            if(value < 0){
-               throw new Error("Age can't be a negative number")
+        default: 0,
+        validate(value) {
+            if (value < 0) {
+                throw new Error("Age can't be a negative number")
             }
 
         }
-    }
+    },
+    tokens: [{
+        usertoken: {
+            type: String,
+            required: true
+        }
+    }]
 })
- module.exports = User
+
+
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    return userObject
+}
+userSchema.methods.generateAuthToken = async function(){
+    const user = this
+    const usertoken = jwt.sign({_id: user._id.toString()}, "userauthtoken")
+    user.tokens = user.tokens.concat({usertoken})
+    await user.save()
+    return usertoken
+
+}
+
+userSchema.statics.findByCredentials = async (email, password) =>{
+    const user = await User.findOne({ email })
+    if(!user){
+        throw new Error('unable to login!')
+    }
+    const ismatch = await bcrypt.compare(password, user.password)
+    if(!ismatch){
+        throw new Error('unable to login!')
+    }
+    return user
+}
+
+//hash the plain text before save
+userSchema.pre('save', async function (next){
+    const user = this
+    if(user.isModified('password')){
+        user.password = await bcrypt.hash(user.password, 8)
+    }
+    next()
+
+})
+const User = mongoose.model('User', userSchema)
+module.exports = User
